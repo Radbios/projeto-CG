@@ -9,7 +9,7 @@ CC = gcc
 XLIBS = -Wall -lGL -lGLU -lglut -lGLEW -lglfw -lX11 -lXxf86vm -lXrandr -lpthread -lXi -ldl -lXinerama -lXcursor -lm
 
 # --- ARQUIVO EXE ---
-ARQ = -o $@.exe
+ARQ = -o $@
 
 ##### RULES #####
 
