@@ -652,10 +652,9 @@ GLuint loadTexture(const char* filename) {
 
     if (!image) {
         printf("Erro ao carregar a textura: %s\n", stbi_failure_reason());
-        return 0;
+        return;
     }
 
-    GLuint textureID;
     glGenTextures(1, &textureID);
     glBindTexture(GL_TEXTURE_2D, textureID);
 
@@ -670,26 +669,33 @@ GLuint loadTexture(const char* filename) {
 
     // Libere a memória da imagem carregada
     stbi_image_free(image);
-
-    return textureID;
 }
 
-void chao(){
+void chao() {
     glPushMatrix();
+    glBindTexture(GL_TEXTURE_2D, textureID);
+    glEnable(GL_TEXTURE_2D);
+
     glBegin(GL_QUADS);
-        //Face de baixo
+        // Face de baixo
 
-        glEnable(GL_TEXTURE_2D);
-        glBindTexture(GL_TEXTURE_2D, textureID);
+        glColor3f(0.9, 0.9, 0.9);
+        glTexCoord2f(0.0f, 0.0f);
+        glVertex3f(-20.0, -10.0, larguraMaxima);
 
-        glColor3f(0.9,0.9,0.9);
-        glVertex3f(-20.0,-10.0,larguraMaxima);
-        glVertex3f(-20.0,-10.0,10.0);
-        glVertex3f(comprimentoMaximo,-10.0,10.0);
-        glVertex3f(comprimentoMaximo,-10.0,larguraMaxima);
+        glTexCoord2f(0.0f, 1.0f);
+        glVertex3f(-20.0, -10.0, 10.0);
+
+        glTexCoord2f(1.0f, 1.0f);
+        glVertex3f(comprimentoMaximo, -10.0, 10.0);
+
+        glTexCoord2f(1.0f, 0.0f);
+        glVertex3f(comprimentoMaximo, -10.0, larguraMaxima);
     glEnd();
+    
+    glDisable(GL_TEXTURE_2D);
     glPopMatrix();
-};
+}
 
 
 void fechadura(){
