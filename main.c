@@ -1,5 +1,9 @@
 #include <GL/glut.h>
 #include <stdio.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
+
 // define a taxa de FPS desejada (60 FPS)
 #define DESIRED_FPS 60
 #define FALSE 0
@@ -9,6 +13,8 @@ typedef int bool;
 
 int width = 800; //largura da janela
 int height = 600; // altura da janela
+
+GLuint textureID;
 
 bool front = FALSE;
 bool back = FALSE;
@@ -106,9 +112,12 @@ int main(int argc, char** argv) {
     return 0;
 }
 
+GLuint loadTexture(const char* filename);
+
 void init(){ // Função de inicialização
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // Limpa o buffer de cor e o buffer de profundidade
     glEnable(GL_DEPTH_TEST); // Habilita o teste de profundidade
+    textureID = loadTexture("textures/chao.png");
 }
 
 void renderScene() { // Função de renderização da cena
@@ -637,10 +646,42 @@ void parede(){
     glPopMatrix();
 }
 
+GLuint loadTexture(const char* filename) {
+    int width, height, channels;
+    unsigned char* image = stbi_load(filename, &width, &height, &channels, STBI_rgb);
+
+    if (!image) {
+        printf("Erro ao carregar a textura: %s\n", stbi_failure_reason());
+        return 0;
+    }
+
+    GLuint textureID;
+    glGenTextures(1, &textureID);
+    glBindTexture(GL_TEXTURE_2D, textureID);
+
+    // Defina os parâmetros de filtragem e repetição da textura
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // Carregue a imagem da textura na memória de vídeo
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+
+    // Libere a memória da imagem carregada
+    stbi_image_free(image);
+
+    return textureID;
+}
+
 void chao(){
     glPushMatrix();
     glBegin(GL_QUADS);
         //Face de baixo
+
+        glEnable(GL_TEXTURE_2D);
+        glBindTexture(GL_TEXTURE_2D, textureID);
+
         glColor3f(0.9,0.9,0.9);
         glVertex3f(-20.0,-10.0,larguraMaxima);
         glVertex3f(-20.0,-10.0,10.0);
@@ -649,6 +690,7 @@ void chao(){
     glEnd();
     glPopMatrix();
 };
+
 
 void fechadura(){
     glPushMatrix();
